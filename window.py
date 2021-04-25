@@ -295,10 +295,13 @@ class Ui_MainWindow(object):
         def crop(image):
             w,h,c = image.shape
 
-            x1 = int((w*self.origin.x())/571) 
-            y1 = int((h*self.origin.y())/491)
-            x2 = int((w*self.finish.x())/571)
-            y2 = int((h*self.finish.y())/491)
+            sizeW = self.pictureBox.size().width()
+            sizeH = self.pictureBox.size().height()
+
+            x1 = int(w*(self.origin.x())/sizeW) 
+            y1 = int(h*(self.origin.y())/sizeH)
+            x2 = int(w*(self.finish.x())/sizeW)
+            y2 = int(h*(self.finish.y())/sizeH)
 
             self.final_image = image[min(x1,x2):max(x1,x2),
                                      min(y1,y2):max(y1,y2)]
@@ -451,8 +454,27 @@ class Ui_MainWindow(object):
         def flipHorizontal():
             self.final_image = flipY(self.final_image)
             show_picture(self.final_image)
-            
 
+        def brightness_image(image, value):
+            hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+            hue, sat, val = cv2.split(hsv)
+            val = cv2.add(val, value)
+
+            val[val > 255] = 255
+            val[val < 0] = 0
+
+            new_hsv = cv2.merge((hue, sat, val))
+            new_image = cv2.cvtColor(new_hsv, cv2.COLOR_HSV2BGR)
+            return new_image
+
+        def bright():
+            self.final_image = brightness_image(self.final_image, int(self.brighterSlider.value()/20))
+            show_picture(self.final_image)
+
+        def dark():
+            self.final_image = brightness_image(self.final_image, -int(self.darkerSlider.value()/20))
+            show_picture(self.final_image)
+            
         self.pictureBox.mousePressEvent = mousePressEvent
         self.pictureBox.mouseMoveEvent = mouseMoveEvent
         self.pictureBox.mouseReleaseEvent = mouseReleaseEvent
@@ -467,6 +489,9 @@ class Ui_MainWindow(object):
 
         self.flipVerticalButton.clicked.connect(flipVertical)
         self.flipHorizontalButton.clicked.connect(flipHorizontal)
+
+        self.brighterSlider.valueChanged.connect(bright)
+        self.darkerSlider.valueChanged.connect(dark)
 
         # ----------END----------
 
