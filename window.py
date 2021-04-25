@@ -426,8 +426,32 @@ class Ui_MainWindow(object):
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             cv2.imwrite(path, image)
 
+        def flipX(image):
+            n_H, n_W, n_C = image.shape
+            new_image = np.zeros_like(image)
+            for h in range(n_H):
+                for w in range(n_W):
+                    for c in range(n_C):
+                        new_image[h, w, c] = image[h, n_W - w - 1, c]
+            return new_image
+
+        def flipY(image):
+            n_H, n_W, n_C = image.shape
+            new_image = np.zeros_like(image)
+            for h in range(n_H):
+                for w in range(n_W):
+                    for c in range(n_C):
+                        new_image[h, w, c] = image[n_H - h - 1, w , c]
+            return new_image
+
+        def flipVertical():
+            self.final_image = flipX(self.final_image)
+            show_picture(self.final_image)
+
         def flipHorizontal():
-            pass
+            self.final_image = flipY(self.final_image)
+            show_picture(self.final_image)
+            
 
         self.pictureBox.mousePressEvent = mousePressEvent
         self.pictureBox.mouseMoveEvent = mouseMoveEvent
@@ -441,6 +465,7 @@ class Ui_MainWindow(object):
         self.resetButton.clicked.connect(reset)
         self.saveButton.clicked.connect(save_image)
 
+        self.flipVerticalButton.clicked.connect(flipVertical)
         self.flipHorizontalButton.clicked.connect(flipHorizontal)
 
         # ----------END----------
