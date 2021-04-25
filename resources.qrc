@@ -1,0 +1,15 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>images/rotation.png</file>
+    <file>images/flipHorizontal.png</file>
+    <file>images/flipVertical.png</file>
+    <file>images/crop-button.png</file>
+    <file>images/drop.png</file>
+    <file>images/enhancement.png</file>
+    <file>images/gallery.png</file>
+    <file>images/invert-tool.png</file>
+    <file>images/photo.png</file>
+    <file>images/reset.png</file>
+    <file>images/save.png</file>
+  </qresource>
+</RCC>

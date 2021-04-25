@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>760</width>
+    <height>780</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Mini Photoshop</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QFrame" name="image_frame">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>20</y>
+      <width>591</width>
+      <height>511</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color:rgb(255, 255, 255)</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="pictureBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>571</width>
+       <height>491</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="resources.qrc">:/icons/images/gallery.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="verticalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>20</y>
+      <width>61</width>
+      <height>521</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QToolButton" name="fileBrowserButton">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>Upload File</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="resources.qrc">
+         <normaloff>:/icons/images/photo.png</normaloff>:/icons/images/photo.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>50</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="cropButton">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>Crop Image</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="resources.qrc">
+         <normaloff>:/icons/images/crop-button.png</normaloff>:/icons/images/crop-button.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>50</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="automaticEnhancementButton">
+       <property name="toolTip">
+        <string>Automatic Enhancement</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="resources.qrc">
+         <normaloff>:/icons/images/enhancement.png</normaloff>:/icons/images/enhancement.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>50</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="inverseButton">
+       <property name="toolTip">
+        <string>Reverse Image</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="resources.qrc">
+         <normaloff>:/icons/images/invert-tool.png</normaloff>:/icons/images/invert-tool.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>50</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="blurButton">
+       <property name="toolTip">
+        <string>Blur</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="resources.qrc">
+         <normaloff>:/icons/images/drop.png</normaloff>:/icons/images/drop.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>50</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="resetButton">
+       <property name="toolTip">
+        <string>Reset</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="resources.qrc">
+         <normaloff>:/icons/images/reset.png</normaloff>:/icons/images/reset.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>50</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="saveButton">
+       <property name="toolTip">
+        <string>Save Image</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="resources.qrc">
+         <normaloff>:/icons/images/save.png</normaloff>:/icons/images/save.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>50</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QFrame" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>543</y>
+      <width>251</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="brighterLabel">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>61</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>9</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Brighter</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="darkerLabel">
+     <property name="geometry">
+      <rect>
+       <x>12</x>
+       <y>40</y>
+       <width>60</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>9</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Darker</string>
+     </property>
+    </widget>
+    <widget class="QSlider" name="brighterSlider">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>10</y>
+       <width>160</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QSlider" name="darkerSlider">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>40</y>
+       <width>160</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="frame_2">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>542</y>
+      <width>291</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="brighterLabel_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>91</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>9</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Inc. Contrast</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="darkerLabel_2">
+     <property name="geometry">
+      <rect>
+       <x>12</x>
+       <y>40</y>
+       <width>91</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>9</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Dec. Contrast</string>
+     </property>
+    </widget>
+    <widget class="QSlider" name="brighterSlider_2">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>10</y>
+       <width>160</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QSlider" name="darkerSlider_2">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>40</y>
+       <width>160</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>640</y>
+      <width>251</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QToolButton" name="flipVerticalButton">
+       <property name="toolTip">
+        <string>Vertical Flip</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="resources.qrc">
+         <normaloff>:/icons/images/flipVertical.png</normaloff>:/icons/images/flipVertical.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>50</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="flipHorizontalButton">
+       <property name="toolTip">
+        <string>Horizontal Flip</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="resources.qrc">
+         <normaloff>:/icons/images/flipHorizontal.png</normaloff>:/icons/images/flipHorizontal.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>50</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QLabel" name="flipLabel">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>623</y>
+      <width>41</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Flip</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="degreeBox">
+    <property name="geometry">
+     <rect>
+      <x>490</x>
+      <y>677</y>
+      <width>113</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="rotateLabel">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>620</y>
+      <width>60</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Rotate</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="degreeLabel">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>675</y>
+      <width>51</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Degree</string>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="rotateButton">
+    <property name="geometry">
+     <rect>
+      <x>637</x>
+      <y>660</y>
+      <width>57</width>
+      <height>56</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Rotate</string>
+    </property>
+    <property name="text">
+     <string>...</string>
+    </property>
+    <property name="icon">
+     <iconset resource="resources.qrc">
+      <normaloff>:/icons/images/rotation.png</normaloff>:/icons/images/rotation.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>50</width>
+      <height>50</height>
+     </size>
+    </property>
+    <property name="autoRaise">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>760</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>
