@@ -210,7 +210,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Mini Photoshop"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Gurkan's Mini Photoshop"))
         self.fileBrowserButton.setToolTip(_translate("MainWindow", "Upload File"))
         self.fileBrowserButton.setText(_translate("MainWindow", "..."))
         self.cropButton.setToolTip(_translate("MainWindow", "Crop Image"))
@@ -458,6 +458,7 @@ class Ui_MainWindow(object):
         def brightness_image(image, value):
             hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
             hue, sat, val = cv2.split(hsv)
+
             val = cv2.add(val, value)
 
             val[val > 255] = 255
@@ -474,6 +475,59 @@ class Ui_MainWindow(object):
         def dark():
             self.final_image = brightness_image(self.final_image, -int(self.darkerSlider.value()/20))
             show_picture(self.final_image)
+
+        def contrast(image, alpha, beta = 0):
+            #I wanted to write contrast function from scratch too, but it is too slow.
+            #It makes the program freeze
+            """ 
+            n_W, n_H, n_C = image.shape
+            new_image = np.zeros_like(image)
+            for w in range(n_W):
+                for h in range(n_H):
+                    for c in range(n_C):
+                        value = image[w, h, c]
+                        new_value = alpha*value+beta
+                        if new_value > 255:
+                            new_value = 255
+                        elif new_value < 0:
+                            new_value = 0
+                        new_image[w, h, c] = new_value
+            return new_image
+            """
+
+            return cv2.addWeighted(image, alpha, np.zeros(image.shape, image.dtype), 0, beta)
+
+        def increase_contrast():
+            alpha = 1 + self.incContrastSlider.value()/100.0
+            beta = 1
+            self.final_image = contrast(self.final_image, alpha, beta)
+            show_picture(self.final_image)
+
+        def decrease_contrast():
+            alpha = 1 + self.incContrastSlider.value()/100.0
+            beta = 1
+            self.final_image = contrast(self.final_image, 1/alpha, -beta/alpha)
+            show_picture(self.final_image)
+
+        def rotate_image(image, degree):
+            (h, w) = image.shape[:2]
+            (cX, cY) = (w // 2, h // 2)
+            angle = degree
+            M = cv2.getRotationMatrix2D((cX, cY), -angle, 1.0)
+            cos = np.abs(M[0, 0])
+            sin = np.abs(M[0, 1])
+            nW = int((h * sin) + (w * cos))
+            nH = int((h * cos) + (w * sin))
+            M[0, 2] += (nW / 2) - cX
+            M[1, 2] += (nH / 2) - cY
+            return cv2.warpAffine(image, M, (nW, nH))
+
+        def rotate():
+            if not self.degreeBox.text():
+                message_box("Empty Error", "You must enter a degree!")
+            else:
+                self.final_image = rotate_image(self.final_image, int(self.degreeBox.text())).astype(np.uint8)
+                show_picture(self.final_image)
             
         self.pictureBox.mousePressEvent = mousePressEvent
         self.pictureBox.mouseMoveEvent = mouseMoveEvent
@@ -492,6 +546,11 @@ class Ui_MainWindow(object):
 
         self.brighterSlider.valueChanged.connect(bright)
         self.darkerSlider.valueChanged.connect(dark)
+
+        self.incContrastSlider.valueChanged.connect(increase_contrast)
+        self.decContrastSlider.valueChanged.connect(decrease_contrast)
+
+        self.rotateButton.clicked.connect(rotate)
 
         # ----------END----------
 
