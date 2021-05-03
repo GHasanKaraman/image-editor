@@ -270,16 +270,16 @@ class Ui_MainWindow(object):
         self.degreeLabel.setText(_translate("MainWindow", "Degree"))
         self.rotateButton.setToolTip(_translate("MainWindow", "Rotate"))
         self.rotateButton.setText(_translate("MainWindow", "..."))
-        self.button1.setText(_translate("MainWindow", "PushButton"))
-        self.button2.setText(_translate("MainWindow", "PushButton"))
-        self.button3.setText(_translate("MainWindow", "PushButton"))
-        self.button4.setText(_translate("MainWindow", "PushButton"))
-        self.button5.setText(_translate("MainWindow", "PushButton"))
-        self.button6.setText(_translate("MainWindow", "PushButton"))
-        self.button7.setText(_translate("MainWindow", "PushButton"))
-        self.button8.setText(_translate("MainWindow", "PushButton"))
-        self.button9.setText(_translate("MainWindow", "PushButton"))
-        self.button10.setText(_translate("MainWindow", "PushButton"))
+        self.button1.setText(_translate("MainWindow", "Sepia"))
+        self.button2.setText(_translate("MainWindow", "Sketch"))
+        self.button3.setText(_translate("MainWindow", "Emboss"))
+        self.button4.setText(_translate("MainWindow", "Shriveled Paper"))
+        self.button5.setText(_translate("MainWindow", "Cartoon"))
+        self.button6.setText(_translate("MainWindow", "Daylight"))
+        self.button7.setText(_translate("MainWindow", "Soul"))
+        self.button8.setText(_translate("MainWindow", "Pixelizer"))
+        self.button9.setText(_translate("MainWindow", "Angelize"))
+        self.button10.setText(_translate("MainWindow", "Devil"))
 
         self.isCropping = False #It shows cropping status
 
@@ -308,6 +308,16 @@ class Ui_MainWindow(object):
             self.incContrastSlider.setEnabled(bool)
             self.decContrastSlider.setEnabled(bool)
             self.pictureBox.setEnabled(bool)
+            self.button1.setEnabled(bool)
+            self.button2.setEnabled(bool)
+            self.button3.setEnabled(bool)
+            self.button4.setEnabled(bool)
+            self.button5.setEnabled(bool)
+            self.button6.setEnabled(bool)
+            self.button7.setEnabled(bool)
+            self.button8.setEnabled(bool)
+            self.button9.setEnabled(bool)
+            self.button10.setEnabled(bool)
 
         #----------START----------
 
@@ -634,6 +644,160 @@ class Ui_MainWindow(object):
             else:
                 self.final_image = rotate_image(self.final_image, int(self.degreeBox.text())).astype(np.uint8) #Rotate the image according to textbox value
                 show_picture(self.final_image)
+
+        # Artistic Filters and Effects        
+
+        #Artistic Filter
+        def sepia(image):
+            filter = np.array([[272, 534, 131],
+                               [349, 686, 168],
+                               [393, 769, 189]])/1000
+            return cv2.filter2D(self.final_image, -1, filter)
+
+        def sepia_effect():
+            self.final_image = sepia(self.final_image)
+            show_picture(self.final_image)
+
+        #Artistic Effect
+        def sketch(image):
+            gray_sketch, color_sketch = cv2.pencilSketch(image, sigma_s = 100, sigma_r = 0.04, shade_factor = 0.2)
+            return color_sketch
+
+        def sketch_effect():
+            try:
+                self.final_image = sketch(self.final_image)
+                show_picture(self.final_image)
+            except:
+                message_box("Image Error", "The image is already a black-white image!")
+
+        #Artistic Filter
+        def emboss(image):
+            filter = np.array([[0, -1, -1],
+                               [1, 0, -1],
+                               [1, 1, 0]])
+            return cv2.filter2D(self.final_image, -1, filter)
+
+        def emboss_effect():
+            self.final_image = emboss(self.final_image)
+            show_picture(self.final_image)
+
+        #Artistic Effect
+        def shriveled_paper(image):
+            img = image.astype("float32")/255.0
+            hh, ww = img.shape[:2]
+
+            wrinkles = cv2.imread('images/crumpled_paper.jpg', 0).astype("float32") / 255.0
+
+            wrinkles = cv2.resize(wrinkles, (ww,hh), fx=0, fy=0)
+
+            wrinkles = 1.33 * wrinkles -0.33
+
+            thresh = cv2.threshold(wrinkles,0.5,1,cv2.THRESH_BINARY)[1]
+            thresh = cv2.cvtColor(thresh,cv2.COLOR_GRAY2BGR) 
+            thresh_inv = 1-thresh
+
+            mean = np.mean(wrinkles)
+            shift = mean - 0.5
+            wrinkles = cv2.subtract(wrinkles, shift)
+
+            wrinkles = cv2.cvtColor(wrinkles, cv2.COLOR_GRAY2BGR) 
+
+            low = 2.0 * img * wrinkles
+            high = 1 - 2.0 * (1-img) * (1-wrinkles)
+            result = ( 255 * (low * thresh_inv + high * thresh) ).clip(0, 255).astype(np.uint8)
+            return result
+
+        def shriveled_paper_effect():
+            self.final_image = shriveled_paper(self.final_image)
+            show_picture(self.final_image)
+
+        #Artistic Effect
+        def cartoon(image):
+            edges1 = cv2.bitwise_not(cv2.Canny(image, 100, 200))
+            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            gray = cv2.medianBlur(gray, 5) # applying median blur with kernel size of 5
+            edges2 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 7, 7) # thick edges
+            dst = cv2.edgePreservingFilter(image, flags=2, sigma_s=64, sigma_r=0.25) # you can also use bilateral filter but that is slow
+            # flag = 1 for RECURS_FILTER (Recursive Filtering) and 2 for  NORMCONV_FILTER (Normalized Convolution). NORMCONV_FILTER produces sharpening of the edges but is slower.
+            # sigma_s controls the size of the neighborhood. Range 1 - 200
+            # sigma_r controls the how dissimilar colors within the neighborhood will be averaged. A larger sigma_r results in large regions of constant color. Range 0 - 1
+            #return cv2.bitwise_and(dst, dst, mask=edges1) # adding thin edges to smoothened image
+            cartoon2 = cv2.bitwise_and(dst, dst, mask=edges2) # adding thick edges to smoothened image
+            return cartoon2
+
+        def cartoon_effect():
+            self.final_image = cartoon(self.final_image)
+            show_picture(self.final_image)
+
+        #Artistic Effect
+        def daylight(image):
+            image_HLS = cv2.cvtColor(image,cv2.COLOR_BGR2HLS) # Conversion to HLS
+            image_HLS = np.array(image_HLS, dtype = np.float64)
+            daylight = 1.15
+            image_HLS[:,:,1] = image_HLS[:,:,1]*daylight # scale pixel values up for channel 1(Lightness)
+            image_HLS[:,:,1][image_HLS[:,:,1]>255]  = 255 # Sets all values above 255 to 255
+            image_HLS = np.array(image_HLS, dtype = np.uint8)
+            image_RGB = cv2.cvtColor(image_HLS,cv2.COLOR_HLS2BGR) # Conversion to RGB
+            return image_RGB
+
+        def daylight_effect():
+            self.final_image = daylight(self.final_image)
+            show_picture(self.final_image)
+
+        #Artistic Filter
+        def soul(image):
+            img1 = cv2.applyColorMap(image, cv2.COLORMAP_BONE)
+            soul = cv2.applyColorMap(img1, cv2.COLORMAP_HOT)
+            filter = np.array([[-1, -1, -1], 
+                               [-1, 9, -1], 
+                               [-1, -1, -1]])
+            return cv2.filter2D(soul, -1, filter)
+
+        def soul_effect():
+            self.final_image = soul(self.final_image)
+            show_picture(self.final_image)
+
+        #Artistic Effects
+        def pixelizer(image):
+            height, width = image.shape[:2]
+
+            # Desired "pixelated" size
+            w, h = (32, 32)
+
+            # Resize input to "pixelated" size
+            temp = cv2.resize(image, (w, h), interpolation=cv2.INTER_LINEAR)
+
+            # Initialize output image
+            output = cv2.resize(temp, (width, height), interpolation=cv2.INTER_NEAREST)
+
+            return output
+
+        def pixelizer_effect():
+            self.final_image = pixelizer(self.final_image)
+            show_picture(self.final_image)
+
+        #Artistic Filter
+        def angel(image):
+            filter = np.array([[1, 1, 1], 
+                               [0, 0, 0], 
+                               [1, 1, 1]])/3
+            return cv2.filter2D(image, -1, filter)
+
+        def angel_effect():
+            self.final_image = angel(self.final_image)
+            show_picture(self.final_image)
+
+        def devil(image):
+            img1 = cv2.applyColorMap(image, cv2.COLORMAP_OCEAN)
+            filter = np.array([[-1, -2, -3], 
+                               [-2, -4, -6], 
+                               [4, 5, 8]])*1024
+            img2 = cv2.filter2D(image, -1, filter)
+            return cv2.bitwise_and(img1, img2)
+
+        def devil_effect():
+            self.final_image = devil(self.final_image)
+            show_picture(self.final_image)
         
         #Event assignments for pictureBox
         self.pictureBox.mousePressEvent = mousePressEvent
@@ -660,6 +824,17 @@ class Ui_MainWindow(object):
         self.decContrastSlider.valueChanged.connect(decrease_contrast)
 
         self.rotateButton.clicked.connect(rotate)
+
+        self.button1.clicked.connect(sepia_effect)
+        self.button2.clicked.connect(sketch_effect)
+        self.button3.clicked.connect(emboss_effect)
+        self.button4.clicked.connect(shriveled_paper_effect)
+        self.button5.clicked.connect(cartoon_effect)
+        self.button6.clicked.connect(daylight_effect)  
+        self.button7.clicked.connect(soul_effect)  
+        self.button8.clicked.connect(pixelizer_effect)
+        self.button9.clicked.connect(angel_effect)
+        self.button10.clicked.connect(devil_effect)
 
         # ----------END----------
 
