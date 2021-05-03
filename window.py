@@ -647,137 +647,141 @@ class Ui_MainWindow(object):
 
         # Artistic Filters and Effects        
 
-        #Artistic Filter
         def sepia(image):
+            #Sebia filter
             filter = np.array([[272, 534, 131],
                                [349, 686, 168],
                                [393, 769, 189]])/1000
+            #filter2D is a basic convolution process. My own conv function works too but it is too slow.
             return cv2.filter2D(self.final_image, -1, filter)
 
+        #Sepia button event
         def sepia_effect():
             self.final_image = sepia(self.final_image)
             show_picture(self.final_image)
 
-        #Artistic Effect
         def sketch(image):
+            #I used pencilSketch function for sketch effect. I found value of the arguments by trying. 
+            #These values are good for images generally.
             gray_sketch, color_sketch = cv2.pencilSketch(image, sigma_s = 100, sigma_r = 0.04, shade_factor = 0.2)
             return color_sketch
 
+        #Sketch button event
         def sketch_effect():
-            try:
-                self.final_image = sketch(self.final_image)
-                show_picture(self.final_image)
-            except:
-                message_box("Image Error", "The image is already a black-white image!")
+            self.final_image = sketch(self.final_image)
+            show_picture(self.final_image)
 
-        #Artistic Filter
         def emboss(image):
+            #Emboss filter
             filter = np.array([[0, -1, -1],
                                [1, 0, -1],
                                [1, 1, 0]])
             return cv2.filter2D(self.final_image, -1, filter)
 
+        #Emboss button event
         def emboss_effect():
             self.final_image = emboss(self.final_image)
             show_picture(self.final_image)
 
-        #Artistic Effect
         def shriveled_paper(image):
+            #normalizing image by dividing it by 255
             img = image.astype("float32")/255.0
-            hh, ww = img.shape[:2]
+            h, w, c  = img.shape
 
-            wrinkles = cv2.imread('images/crumpled_paper.jpg', 0).astype("float32") / 255.0
+            #reading crumpled paper image as gray and then normalizing it
+            crumpled = cv2.imread('images/crumpled_paper.jpg', 0).astype("float32") / 255.0
 
-            wrinkles = cv2.resize(wrinkles, (ww,hh), fx=0, fy=0)
+            #resize crumpled image to same size with image given to this function
+            crumpled  = cv2.resize(crumpled , (w, h))
 
-            wrinkles = 1.33 * wrinkles -0.33
+            #applying linear transform to stretch crumpled image and to make it shade derker. 
+            #1.33 and -0.33 numbers are from an equation.
+            crumpled  = 1.33 * crumpled  -0.33
 
-            thresh = cv2.threshold(wrinkles,0.5,1,cv2.THRESH_BINARY)[1]
-            thresh = cv2.cvtColor(thresh,cv2.COLOR_GRAY2BGR) 
-            thresh_inv = 1-thresh
+            #threshold crumpled image and inverting it
+            threshold = cv2.thresholdold(crumpled ,0.5,1,cv2.THRESH_BINARY)[1]
+            threshold = cv2.cvtColor(threshold,cv2.COLOR_GRAY2BGR) 
+            threshold_inverse = 1-threshold
 
-            mean = np.mean(wrinkles)
+            #Brighting crumpled image 
+            mean = np.mean(crumpled)
             shift = mean - 0.5
-            wrinkles = cv2.subtract(wrinkles, shift)
+            crumpled  = cv2.subtract(crumpled , shift)
 
-            wrinkles = cv2.cvtColor(wrinkles, cv2.COLOR_GRAY2BGR) 
+            #cumpled image was gray so I converted it to BGR back.
+            crumpled  = cv2.cvtColor(crumpled , cv2.COLOR_GRAY2BGR) 
 
-            low = 2.0 * img * wrinkles
-            high = 1 - 2.0 * (1-img) * (1-wrinkles)
-            result = ( 255 * (low * thresh_inv + high * thresh) ).clip(0, 255).astype(np.uint8)
-            return result
+            #Hard light composite
+            low = 2.0 * img * crumpled 
+            high = 1 - 2.0 * (1 - img) * (1 - crumpled)
+            new_image = 255 * (low * threshold_inverse + high * threshold)
+            return new_image.clip(0, 255).astype(np.uint8) #Taking image in range 0 to 255 as int
 
+        #Shriveled Paper button event
         def shriveled_paper_effect():
             self.final_image = shriveled_paper(self.final_image)
             show_picture(self.final_image)
 
-        #Artistic Effect
         def cartoon(image):
-            edges1 = cv2.bitwise_not(cv2.Canny(image, 100, 200))
             gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            gray = cv2.medianBlur(gray, 5) # applying median blur with kernel size of 5
-            edges2 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 7, 7) # thick edges
-            dst = cv2.edgePreservingFilter(image, flags=2, sigma_s=64, sigma_r=0.25) # you can also use bilateral filter but that is slow
-            # flag = 1 for RECURS_FILTER (Recursive Filtering) and 2 for  NORMCONV_FILTER (Normalized Convolution). NORMCONV_FILTER produces sharpening of the edges but is slower.
-            # sigma_s controls the size of the neighborhood. Range 1 - 200
-            # sigma_r controls the how dissimilar colors within the neighborhood will be averaged. A larger sigma_r results in large regions of constant color. Range 0 - 1
-            #return cv2.bitwise_and(dst, dst, mask=edges1) # adding thin edges to smoothened image
-            cartoon2 = cv2.bitwise_and(dst, dst, mask=edges2) # adding thick edges to smoothened image
+            gray = cv2.medianBlur(gray, 7) #median blur with kernel size 7
+            edges2 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 7, 7) #thick lines
+            dst = cv2.edgePreservingFilter(image, flags = 2, sigma_s = 55, sigma_r = 0.3) #it is like bilateral filter. I found the values by trying.
+            cartoon2 = cv2.bitwise_and(dst, dst, mask = edges2) #smooth image and edged image are merging.
             return cartoon2
 
         def cartoon_effect():
             self.final_image = cartoon(self.final_image)
             show_picture(self.final_image)
 
-        #Artistic Effect
         def daylight(image):
-            image_HLS = cv2.cvtColor(image,cv2.COLOR_BGR2HLS) # Conversion to HLS
-            image_HLS = np.array(image_HLS, dtype = np.float64)
-            daylight = 1.15
-            image_HLS[:,:,1] = image_HLS[:,:,1]*daylight # scale pixel values up for channel 1(Lightness)
-            image_HLS[:,:,1][image_HLS[:,:,1]>255]  = 255 # Sets all values above 255 to 255
-            image_HLS = np.array(image_HLS, dtype = np.uint8)
-            image_RGB = cv2.cvtColor(image_HLS,cv2.COLOR_HLS2BGR) # Conversion to RGB
+            #Firstly I tried it with HSV, but it is not as good as HLS. 
+            hls_image = cv2.cvtColor(image,cv2.COLOR_BGR2HLS) #converting image to HLS
+            hls_image = np.array(hls_image, dtype = np.float64)
+            daylight = 1.2
+            hls_image[:,:,1] = hls_image[:,:,1] * daylight # L(light) values are multiplying by daylight variable
+            hls_image[:,:,1][hls_image[:,:,1]>255] = 255 # If a value is greater than 255, that value is going to be 255
+            hls_image = np.array(hls_image, dtype = np.uint8)
+            image_RGB = cv2.cvtColor(hls_image,cv2.COLOR_HLS2BGR) # Converting hls image to BGR back
             return image_RGB
 
+        #Daylight button event
         def daylight_effect():
             self.final_image = daylight(self.final_image)
             show_picture(self.final_image)
 
-        #Artistic Filter
         def soul(image):
-            img1 = cv2.applyColorMap(image, cv2.COLORMAP_BONE)
-            soul = cv2.applyColorMap(img1, cv2.COLORMAP_HOT)
+            #I applied some colormaps to image. I found them randomly they are not special. Then I used sharpening filter.
+            image = cv2.applyColorMap(image, cv2.COLORMAP_BONE)
+            image = cv2.applyColorMap(image, cv2.COLORMAP_HOT)
             filter = np.array([[-1, -1, -1], 
                                [-1, 9, -1], 
                                [-1, -1, -1]])
-            return cv2.filter2D(soul, -1, filter)
+            return cv2.filter2D(image, -1, filter)
 
         def soul_effect():
             self.final_image = soul(self.final_image)
             show_picture(self.final_image)
 
-        #Artistic Effects
-        def pixelizer(image):
-            height, width = image.shape[:2]
 
-            # Desired "pixelated" size
+        def pixelizer(image):
+            height, width, channel = image.shape
+            #Pixel size
             w, h = (32, 32)
 
-            # Resize input to "pixelated" size
+            # Resizing giving image to same with pixel size
             temp = cv2.resize(image, (w, h), interpolation=cv2.INTER_LINEAR)
 
-            # Initialize output image
-            output = cv2.resize(temp, (width, height), interpolation=cv2.INTER_NEAREST)
+            #Resizing image to original size again
+            return cv2.resize(temp, (width, height), interpolation=cv2.INTER_NEAREST)
 
-            return output
-
+        #Pixelizer button event
         def pixelizer_effect():
             self.final_image = pixelizer(self.final_image)
             show_picture(self.final_image)
 
-        #Artistic Filter
         def angel(image):
+            #I tried this filter on images and it brights the images.
             filter = np.array([[1, 1, 1], 
                                [0, 0, 0], 
                                [1, 1, 1]])/3
@@ -788,13 +792,18 @@ class Ui_MainWindow(object):
             show_picture(self.final_image)
 
         def devil(image):
-            img1 = cv2.applyColorMap(image, cv2.COLORMAP_OCEAN)
+            #I applied a colormap to the image first
+            image1 = cv2.applyColorMap(image, cv2.COLORMAP_OCEAN)
+            #I found this filter by trying very different numbers. 
+            #It is like edge detection filter, but it looks cooler than normal edge detection.
+            #Then I merged them with bitwise and.
             filter = np.array([[-1, -2, -3], 
                                [-2, -4, -6], 
                                [4, 5, 8]])*1024
-            img2 = cv2.filter2D(image, -1, filter)
-            return cv2.bitwise_and(img1, img2)
+            image2 = cv2.filter2D(image, -1, filter)
+            return cv2.bitwise_and(image1, image2)
 
+        #Devil button event
         def devil_effect():
             self.final_image = devil(self.final_image)
             show_picture(self.final_image)
